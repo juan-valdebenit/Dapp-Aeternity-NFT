@@ -121,7 +121,7 @@ export const MintPage = () => {
 
   const sendHashKeysToBackend = async () => {
     // the endpoint needed to upload the file
-    const url = "http://127.0.0.1:5000/mint";
+    const url = "http://localhost:5000/mint";
 
     const response = await axios.post(url, { hashKeys: myipfsHash });
 
