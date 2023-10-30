@@ -5,13 +5,24 @@ import VideoToThumb from "video-thumb-generator";
 
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
+import { notification } from "antd";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import "App.css";
 
 export const MintPage = () => {
   const [file, setFile] = useState([]);
-  const [myipfsHash, setIPFSHASH] = useState("");
+  const [myipfsHash, setIPFSHASH] = useState([]);
+  const [api, contextHolder] = notification.useNotification();
+  const [aeScanUrl, setAeScanUrl] = useState();
+  const [isMintStarted, setIsMintStarted] = useState(false);
+
+  const openNotificationWithIcon = (type, message, description) => {
+    api[type]({
+      message,
+      description,
+    });
+  };
 
   // helper function: generate a new file from base64 String
   const dataURLtoFile = (dataurl, filename) => {
@@ -34,7 +45,6 @@ export const MintPage = () => {
       // generate file from base64 string
       const fileImg = dataURLtoFile(`${filesToHandle}`, "image");
 
-      //   console.log("file", fileImg);
       //   initialize the form data
       const formData = new FormData();
       // append the files form data to
@@ -56,10 +66,13 @@ export const MintPage = () => {
         },
       });
 
-      //   console.log(response);
+      console.log(response);
 
       // get the hash
-      setIPFSHASH(response.data.IpfsHash);
+      const ipfsHashs = myipfsHash;
+      ipfsHashs.push(response.data.IpfsHash);
+
+      setIPFSHASH(ipfsHashs);
     } catch (error) {
       console.log(error);
     }
@@ -67,32 +80,56 @@ export const MintPage = () => {
 
   const handleVideoUpload = (event) => {
     const video = event.target.files[0];
+
     console.log("video", video);
-    const videoToThumb = new VideoToThumb(video)
+
+    new VideoToThumb(video)
       .load()
-      .positions([1, 2, 3, 4, 5, 6, 7, 8]) // time
+      .positions([1, 3]) // time
       .xy([0, 0]) // coordinator
       .size([200, 200]) // image size
       .type("base64")
       .error(function (err) {
-        // console.log(JSON.stringify(err));
         console.log("error", err);
       })
       .done(async function (imgs) {
-        imgs.forEach(function (img) {
-          var elem = new Image();
-          elem.src = img;
+        // imgs.forEach(function (img) {
+        //   var elem = new Image();
+        //   elem.src = img;
 
-          document.body.appendChild(elem);
-        });
+        //   document.body.appendChild(elem);
+        // });
 
         setFile(imgs);
       });
-    console.log(videoToThumb);
+
+    openNotificationWithIcon(
+      "success",
+      "Success",
+      "Thumbnails are created from the selected video successfully"
+    );
+  };
+
+  const sendHashKeysToBackend = async () => {
+    // the endpoint needed to upload the file
+    const url = "http://127.0.0.1:5000/mint";
+
+    const response = await axios.post(url, { hashKeys: myipfsHash });
+
+    openNotificationWithIcon(
+      "success",
+      "Success",
+      "Contracts are deployed successfully"
+    );
+    setAeScanUrl(
+      `https://testnet.aescan.io/contracts/${response.data.contractAddress}`
+    );
+    console.log(response);
   };
 
   return (
     <>
+      {contextHolder}
       <div className="App">
         <Button
           component="label"
@@ -108,15 +145,21 @@ export const MintPage = () => {
           <VisuallyHiddenInput
             type="file"
             multiple={true}
-            onChange={handleVideoUpload}
+            onChange={(event) => {
+              handleVideoUpload(event);
+            }}
           />
         </Button>
         <Button
           variant="contained"
           startIcon={<CloudUploadIcon />}
-          onClick={() => {
-            file.forEach((i) => pinFileToPinata(i));
-            // pinFileToPinata(file);
+          onClick={async () => {
+            await file.forEach((i) => pinFileToPinata(i));
+            openNotificationWithIcon(
+              "success",
+              "Success",
+              "Thumbnails are pinned to cloud successfully"
+            );
           }}
           style={{
             textTransform: "capitalize",
@@ -125,12 +168,16 @@ export const MintPage = () => {
             marginLeft: "30px",
           }}
         >
-          Pin To Cloud
+          Upload Images To Cloud
         </Button>
         <Button
           variant="contained"
           startIcon={<CloudUploadIcon />}
-          onClick={() => {}}
+          onClick={() => {
+            setIsMintStarted(true);
+            sendHashKeysToBackend();
+            console.log(myipfsHash);
+          }}
           style={{
             textTransform: "capitalize",
             marginTop: "30px",
@@ -138,8 +185,14 @@ export const MintPage = () => {
             marginLeft: "30px",
           }}
         >
-          Minting
+          Mint Images
         </Button>
+        <br />
+        {aeScanUrl ? (
+          <a href={aeScanUrl}>Go to AEScan</a>
+        ) : (
+          isMintStarted && <h2>Minting...</h2>
+        )}
       </div>
     </>
   );
