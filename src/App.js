@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 
-import { HomePage } from "pages/HomePage";
 import { MintPage } from "pages/MintPage";
 
 import { PATH } from "constants/path";
@@ -17,8 +16,7 @@ function App() {
     <>
       <GlobalStyles />
       <Routes>
-        <Route path={PATH.INDEX} element={<HomePage />} />
-        <Route path={PATH.MINT} element={<MintPage />} />
+        <Route path={PATH.INDEX} element={<MintPage />} />
       </Routes>
     </>
   );

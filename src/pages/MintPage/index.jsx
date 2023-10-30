@@ -8,6 +8,8 @@ import Button from "@mui/material/Button";
 import { notification } from "antd";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
+import BrokenImageIcon from "@mui/icons-material/BrokenImage";
+import logo from "assets/logo.png";
 import "App.css";
 
 export const MintPage = () => {
@@ -85,20 +87,27 @@ export const MintPage = () => {
 
     new VideoToThumb(video)
       .load()
-      .positions([1, 3]) // time
+      .positions([1, 3, 5]) // time
       .xy([0, 0]) // coordinator
-      .size([200, 200]) // image size
+      .size([400, 400]) // image size
       .type("base64")
       .error(function (err) {
         console.log("error", err);
       })
       .done(async function (imgs) {
-        // imgs.forEach(function (img) {
-        //   var elem = new Image();
-        //   elem.src = img;
+        var div = document.createElement("div");
+        div.style =
+          "display: flex; justify-content: center; align-items: center";
 
-        //   document.body.appendChild(elem);
-        // });
+        imgs.forEach(function (img) {
+          var elem = new Image();
+          elem.src = img;
+          elem.style = "margin-right: 20px; border: solid red 3px";
+
+          div.appendChild(elem);
+        });
+
+        document.body.appendChild(div);
 
         setFile(imgs);
       });
@@ -112,7 +121,7 @@ export const MintPage = () => {
 
   const sendHashKeysToBackend = async () => {
     // the endpoint needed to upload the file
-    const url = "http://44.202.19.19:5000/mint";
+    const url = "http://127.0.0.1:5000/mint";
 
     const response = await axios.post(url, { hashKeys: myipfsHash });
 
@@ -129,8 +138,30 @@ export const MintPage = () => {
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <img
+          src={logo}
+          className="App-logo"
+          alt="logo"
+          style={{
+            marginTop: "100px",
+            textAlign: "center",
+            display: "block",
+          }}
+        />
+      </div>
       {contextHolder}
       <div className="App">
+        <p style={{ color: "#2F3F7C" }}>
+          This is the MVP version, which Mints NFT tokens containing thumbnails
+          of sports videos on the Aeternity blockchain.
+        </p>
         <Button
           component="label"
           variant="contained"
@@ -139,6 +170,10 @@ export const MintPage = () => {
             textTransform: "capitalize",
             marginTop: "30px",
             marginBottom: "30px",
+            backgroundColor: "#F69025",
+            fontWeight: "600!important",
+            fontSize: "16px",
+            width: "300px",
           }}
         >
           Select file
@@ -166,13 +201,17 @@ export const MintPage = () => {
             marginTop: "30px",
             marginBottom: "30px",
             marginLeft: "30px",
+            backgroundColor: "#F69025",
+            fontWeight: "600!important",
+            fontSize: "16px",
+            width: "300px",
           }}
         >
           Upload Images To Cloud
         </Button>
         <Button
           variant="contained"
-          startIcon={<CloudUploadIcon />}
+          startIcon={<BrokenImageIcon />}
           onClick={() => {
             setIsMintStarted(true);
             sendHashKeysToBackend();
@@ -183,6 +222,10 @@ export const MintPage = () => {
             marginTop: "30px",
             marginBottom: "30px",
             marginLeft: "30px",
+            backgroundColor: "#F69025",
+            fontWeight: "600!important",
+            fontSize: "16px",
+            width: "300px",
           }}
         >
           Mint Images
