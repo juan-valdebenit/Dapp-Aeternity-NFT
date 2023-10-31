@@ -1,7 +1,11 @@
-const axios = require("axios").default;
-const { generateKeyPair } = require("@aeternity/aepp-sdk");
+import axios from "axios";
+import { generateKeyPair } from "@aeternity/aepp-sdk";
+import dotenv from "dotenv";
+dotenv.config();
 
-const run = async () => {
+export let keypair = null;
+
+export const run = async () => {
   keypair = generateKeyPair();
   console.log(`Secret key: ${keypair.secretKey}`);
   console.log(`Public key: ${keypair.publicKey}`);
@@ -15,5 +19,3 @@ const run = async () => {
 };
 
 // run();
-
-module.exports = run;

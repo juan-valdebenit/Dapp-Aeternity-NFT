@@ -1,10 +1,7 @@
-const {
-  AeSdk,
-  CompilerHttp,
-  MemoryAccount,
-  Node,
-} = require("@aeternity/aepp-sdk");
-const { utils } = require("@aeternity/aeproject");
+import { AeSdk, CompilerHttp, MemoryAccount, Node } from "@aeternity/aepp-sdk";
+import { utils } from "@aeternity/aeproject";
+import { keypair } from "./createKeypairAndFundAccount.js";
+import { collectionUniqueMetadata } from "../routes/api/mint.js";
 
 const shutdown = (varName) => {
   console.error(`Missing ENV variable: ${varName}`);
@@ -16,8 +13,9 @@ const COMPILER_URL = "https://v7.compiler.aeternity.io";
 
 // const collectionUniqueMetadata = require("../nfts/collection_unique_nfts.json");
 
+export let deployment = null;
 const deployAndMintCollectionUniqueNFTs = async () => {
-  secretKey = keypair.secretKey;
+  let secretKey = keypair.secretKey;
   if (!secretKey) {
     shutdown("SECRET_KEY");
   }
@@ -96,4 +94,4 @@ const deployAndMintCollectionUniqueNFTs = async () => {
   }
 };
 
-module.exports = deployAndMintCollectionUniqueNFTs;
+export default deployAndMintCollectionUniqueNFTs;
