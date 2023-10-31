@@ -1,0 +1,39 @@
+.div-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.div-flex-1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .div-flex {
+    flex-direction: column;
+  }
+
+  .img-style {
+    margin-top: 20px;
+  }
+}
+
+.img-style {
+  border: solid red 3px;
+  margin: 20px;
+}
+
+.button-style {
+  text-transform: "capitalize";
+  margin-top: "30px";
+  margin-bottom: "30px";
+  background-color: "#F69025";
+  font-weight: "600!important";
+  font-size: "16px";
+  width: "300px";
+  margin-right: 20px;
+}

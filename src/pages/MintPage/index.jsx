@@ -11,6 +11,7 @@ import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import logo from "assets/logo.png";
 import "App.css";
+import "./style.css";
 
 export const MintPage = () => {
   const [file, setFile] = useState([]);
@@ -89,20 +90,21 @@ export const MintPage = () => {
       .load()
       .positions([1, 3, 5]) // time
       .xy([0, 0]) // coordinator
-      .size([400, 400]) // image size
+      .size([280, 280]) // image size
       .type("base64")
       .error(function (err) {
         console.log("error", err);
       })
       .done(async function (imgs) {
         var div = document.createElement("div");
-        div.style =
-          "display: flex; justify-content: center; align-items: center";
+        // div.style =
+        //   "display: flex; justify-content: center; align-items: center";
+        div.className = "div-flex";
 
         imgs.forEach(function (img) {
           var elem = new Image();
           elem.src = img;
-          elem.style = "margin-right: 20px; border: solid red 3px";
+          elem.className = "img-style";
 
           div.appendChild(elem);
         });
@@ -121,7 +123,7 @@ export const MintPage = () => {
 
   const sendHashKeysToBackend = async () => {
     // the endpoint needed to upload the file
-    const url = "http://44.202.19.19:5000/mint";
+    const url = "http://127.0.0.1:5000/mint";
 
     const response = await axios.post(url, { hashKeys: myipfsHash });
 
@@ -157,79 +159,77 @@ export const MintPage = () => {
         />
       </div>
       {contextHolder}
-      <div className="App">
-        <p style={{ color: "#2F3F7C" }}>
+      <div className="div-flex-1">
+        <p style={{ color: "#2F3F7C", textAlign: "center" }}>
           This is the MVP version, which Mints NFT tokens containing thumbnails
           of sports videos on the Aeternity blockchain.
         </p>
-        <Button
-          component="label"
-          variant="contained"
-          startIcon={<LocalMoviesIcon />}
-          style={{
-            textTransform: "capitalize",
-            marginTop: "30px",
-            marginBottom: "30px",
-            backgroundColor: "#F69025",
-            fontWeight: "600!important",
-            fontSize: "16px",
-            width: "300px",
-          }}
-        >
-          Select file
-          <VisuallyHiddenInput
-            type="file"
-            multiple={true}
-            onChange={(event) => {
-              handleVideoUpload(event);
+        <div className="div-flex">
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<LocalMoviesIcon />}
+            style={{
+              textTransform: "capitalize",
+              margin: "20px",
+              backgroundColor: "#F69025",
+              fontWeight: "600!important",
+              fontSize: "16px",
+              width: "300px",
             }}
-          />
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          onClick={async () => {
-            await file.forEach((i) => pinFileToPinata(i));
-            openNotificationWithIcon(
-              "success",
-              "Success",
-              "Thumbnails are pinned to cloud successfully"
-            );
-          }}
-          style={{
-            textTransform: "capitalize",
-            marginTop: "30px",
-            marginBottom: "30px",
-            marginLeft: "30px",
-            backgroundColor: "#F69025",
-            fontWeight: "600!important",
-            fontSize: "16px",
-            width: "300px",
-          }}
-        >
-          Upload Images To Cloud
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<BrokenImageIcon />}
-          onClick={() => {
-            setIsMintStarted(true);
-            sendHashKeysToBackend();
-            console.log(myipfsHash);
-          }}
-          style={{
-            textTransform: "capitalize",
-            marginTop: "30px",
-            marginBottom: "30px",
-            marginLeft: "30px",
-            backgroundColor: "#F69025",
-            fontWeight: "600!important",
-            fontSize: "16px",
-            width: "300px",
-          }}
-        >
-          Mint Images
-        </Button>
+          >
+            Select file
+            <VisuallyHiddenInput
+              type="file"
+              multiple={true}
+              onChange={(event) => {
+                handleVideoUpload(event);
+              }}
+            />
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            onClick={async () => {
+              await file.forEach((i) => pinFileToPinata(i));
+              openNotificationWithIcon(
+                "success",
+                "Success",
+                "Thumbnails are pinned to cloud successfully"
+              );
+            }}
+            style={{
+              textTransform: "capitalize",
+              margin: "20px",
+              backgroundColor: "#F69025",
+              fontWeight: "600!important",
+              fontSize: "16px",
+              width: "300px",
+            }}
+          >
+            Upload Images To Cloud
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<BrokenImageIcon />}
+            onClick={() => {
+              setIsMintStarted(true);
+              sendHashKeysToBackend();
+              console.log(myipfsHash);
+            }}
+            style={{
+              textTransform: "capitalize",
+              margin: "20px",
+              backgroundColor: "#F69025",
+              fontWeight: "600!important",
+              fontSize: "16px",
+              width: "300px",
+            }}
+          >
+            Mint Images
+          </Button>
+        </div>
+
         <br />
         {aeScanUrl ? (
           <a href={aeScanUrl}>Go to AEScan</a>
