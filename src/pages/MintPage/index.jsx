@@ -9,6 +9,8 @@ import { notification } from "antd";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
+import AddCard from "@mui/icons-material/AddCard";
+
 import logo from "assets/logo.png";
 import "App.css";
 import "./style.css";
@@ -19,6 +21,7 @@ export const MintPage = () => {
   const [api, contextHolder] = notification.useNotification();
   const [aeScanUrl, setAeScanUrl] = useState();
   const [isMintStarted, setIsMintStarted] = useState(false);
+  const [mintAddress, setMintAddress] = useState();
 
   const openNotificationWithIcon = (type, message, description) => {
     api[type]({
@@ -135,8 +138,15 @@ export const MintPage = () => {
     setAeScanUrl(
       `https://testnet.aescan.io/contracts/${response.data.contractAddress}`
     );
+    setMintAddress(
+      `https://testnet.aescan.io/accounts/`+ response.data.deployerAddress
+    );
     console.log(response);
   };
+
+  const addToTradingCard = ()=> {
+    console.log("add to trading card")
+  }
 
   return (
     <>
@@ -228,11 +238,32 @@ export const MintPage = () => {
           >
             Mint Images
           </Button>
+
+          <Button
+            variant="contained"
+            startIcon={<AddCard />}
+            onClick={() => {
+              addToTradingCard();
+            }}
+            style={{
+              textTransform: "capitalize",
+              margin: "20px",
+              backgroundColor: "#F69025",
+              fontWeight: "600!important",
+              fontSize: "16px",
+              width: "300px",
+            }}
+          >
+            Add to Trading Card
+          </Button>
         </div>
 
         <br />
         {aeScanUrl ? (
-          <a href={aeScanUrl}>Go to AEScan</a>
+          <div>
+          <a href={aeScanUrl} target ="_blank">Go to AEScan</a><br/>
+          <a href={mintAddress}>Go to Account</a>
+          </div>
         ) : (
           isMintStarted && <h2>Minting...</h2>
         )}
