@@ -2,32 +2,16 @@ import React, { useState } from "react";
 import FormData from "form-data";
 import axios from "axios";
 import VideoToThumb from "video-thumb-generator";
+
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import { notification } from "antd";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import AddCard from "@mui/icons-material/AddCard";
-import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import logo from "assets/logo.png";
 import "App.css";
 import "./style.css";
-import { useMediaQuery } from "@mui/material";
-import { MDBDataTableV5 } from "mdbreact";
-import { useTheme } from "@mui/material/styles";
 
 export const MintPage = () => {
   const [file, setFile] = useState([]);
@@ -35,13 +19,6 @@ export const MintPage = () => {
   const [api, contextHolder] = notification.useNotification();
   const [aeScanUrl, setAeScanUrl] = useState();
   const [isMintStarted, setIsMintStarted] = useState(false);
-  const [mintAddress, setMintAddress] = useState();
-  const [value, setValue] = React.useState(0);
-  const [inputAddress, setInputAddress] = useState("");
-  const [fetchData, setFetchData] = useState([]);
-  const [realData, setRealData] = useState([]);
-  const theme = useTheme()
-  const matchMd = useMediaQuery(theme.breakpoints.up('md'))
 
   const openNotificationWithIcon = (type, message, description) => {
     api[type]({
@@ -106,28 +83,34 @@ export const MintPage = () => {
 
   const handleVideoUpload = (event) => {
     const video = event.target.files[0];
+
     console.log("video", video);
+
     new VideoToThumb(video)
       .load()
       .positions([1, 3, 5]) // time
       .xy([0, 0]) // coordinator
-      .size([280, 158]) // image size
+      .size([280, 280]) // image size
       .type("base64")
       .error(function (err) {
         console.log("error", err);
       })
       .done(async function (imgs) {
         var div = document.createElement("div");
+        // div.style =
+        //   "display: flex; justify-content: center; align-items: center";
         div.className = "div-flex";
 
         imgs.forEach(function (img) {
           var elem = new Image();
           elem.src = img;
           elem.className = "img-style";
+
           div.appendChild(elem);
         });
-        const element = document.getElementById("imageClip");
-        element.appendChild(div);
+
+        document.body.appendChild(div);
+
         setFile(imgs);
       });
 
@@ -152,87 +135,7 @@ export const MintPage = () => {
     setAeScanUrl(
       `https://testnet.aescan.io/contracts/${response.data.contractAddress}`
     );
-    setMintAddress(
-      `https://testnet.aescan.io/accounts/` + response.data.deployerAddress
-    );
     console.log(response);
-  };
-
-  const getCustomNFT = async () => {
-    console.log(inputAddress);
-    if (inputAddress == "") {
-      openNotificationWithIcon(
-        "error",
-        "Alert",
-        "Input correct Address please"
-      );
-    }
-    await axios
-      .get(
-        "https://testnet.aeternity.io/mdw/v2/accounts/" +
-          inputAddress +
-          "/activities?limit=100"
-      )
-      .then((response) => {
-        setFetchData(response.data);
-        handleData(response.data.data);
-      })
-      .catch((err) => {});
-  };
-
-  const handleData = async (buffer) => {
-    let rowDatas = [];
-    try {
-      for (let i = 0; i < buffer.length; i++) {
-        if (buffer[i].payload.tx.function === "mint") {
-          let rowData = [];
-          console.log(
-            "here",
-            buffer[i].payload.tx.arguments[1].value[1].value[1]
-          );
-          rowData = {
-            index: rowDatas.length + 1,
-            mintHash: buffer[i].payload.hash,
-            tokenAddress: buffer[i].payload.tx.contract_id,
-            tokenID: buffer[i].payload.tx.return.value,
-            tokenURI: (
-              <img
-                style={{ width: 120, height: 60, paddingTop: 8, paddingBottom: 8, verticalAlign: 'middle' }}
-                src={buffer[
-                  i
-                ].payload.tx.arguments[1].value[1].value[1].value[0].val.value.replace(
-                  "ipfs://",
-                  "https://ipfs.io/ipfs/"
-                )}
-              ></img>
-            ),
-          };
-          rowDatas.push(rowData);
-          setRealData(rowDatas);
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    console.log("realdata", rowDatas, realData);
-    return realData;
-  };
-
-  const AddCustomNFTTrading = () => {
-    openNotificationWithIcon(
-      "success",
-      "Success",
-      "Adding to Trading Card Now..."
-    );
-  }
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const handleAddress = (e) => {
-    setInputAddress(e.target.value);
-    console.log(inputAddress);
   };
 
   return (
@@ -257,221 +160,82 @@ export const MintPage = () => {
       </div>
       {contextHolder}
       <div className="div-flex-1">
-        <p style={{ color: "#2F3F7C", textAlign: "center" }} id="mainTitle">
+        <p style={{ color: "#2F3F7C", textAlign: "center" }}>
           This is the MVP version, which Mints NFT tokens containing thumbnails
           of sports videos on the Aeternity blockchain.
         </p>
-        <Box sx={{ maxWidth: 1440, width: '100%', px: 2, borderColor: "#F69025" }}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              aria-label="basic tabs example"
-            >
-              <Tab
-                label="Mint Page"
-                {...a11yProps(0)}
-                sx={{ color: "#F69025" }}
-              />
-              <Tab
-                label="Trading Card"
-                {...a11yProps(1)}
-                sx={{ color: "#F69025" }}
-              />
-            </Tabs>
-          </Box>
-          <CustomTabPanel value={value} index={0}>
-            <div className="div-flex" style={{ gap: 20}}>
-              <Button
-                component="label"
-                id="selectFile"
-                variant="contained"
-                startIcon={<LocalMoviesIcon />}
-                style={{
-                  textTransform: "capitalize",
-                  backgroundColor: "#F69025",
-                  fontWeight: "600!important",
-                  fontSize: "16px",
-                  width: '100%'
-                }}
-              >
-                Select file
-                <VisuallyHiddenInput
-                  type="file"
-                  multiple={true}
-                  onChange={(event) => {
-                    handleVideoUpload(event);
-                  }}
-                />
-              </Button>
-              <Button
-                id="uploadCloud"
-                variant="contained"
-                startIcon={<CloudUploadIcon />}
-                onClick={async () => {
-                  await file.forEach((i) => pinFileToPinata(i));
-                  openNotificationWithIcon(
-                    "success",
-                    "Success",
-                    "Thumbnails are pinned to cloud successfully"
-                  );
-                }}
-                style={{
-                  
-                  width: '100%',
-                  textTransform: "capitalize",
-                  backgroundColor: "#F69025",
-                  fontWeight: "600!important",
-                  fontSize: "16px",
-                  // width: "300px",
-                }}
-              >
-                Upload Images To Cloud
-              </Button>
-              <Button
-                id="mintImages"
-                variant="contained"
-                startIcon={<BrokenImageIcon />}
-                onClick={() => {
-                  setIsMintStarted(true);
-                  sendHashKeysToBackend();
-                  console.log(myipfsHash);
-                }}
-                sx={{
-                  width: '100%'
-                }}
-                style={{
-                  textTransform: "capitalize",
-                  backgroundColor: "#F69025",
-                  fontWeight: "600!important",
-                  fontSize: "16px",
-                  // width: "300px",
-                }}
-              >
-                Mint Images
-              </Button>
-            </div>
-            {aeScanUrl ? (
-              <div style={{ width: 'fit-content', display: 'flex', gap: '40px', marginTop: '30px', marginRight: 'auto', marginLeft: 'auto'}}>
-                <a href={aeScanUrl} target="_blank">
-                  Go to AEScan
-                </a>
-                <br />
-                <a href={mintAddress}>Go to Account</a>
-              </div>
-            ) : (
-              isMintStarted && (
-                <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
-                  Minting...
-                </h2>
-              )
-            )}
-            <div id="imageClip"></div>
-            <br />
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={1}>
-            <div>
-              <Box sx={{
-                display: 'flex',
-                flexDirection: {
-                  md: 'row',
-                  xs: 'column'
-                },
-                alignItems: { md: 'center', xs: 'flex-start'},
-                gap: 4,
-                pb: matchMd ? 5 : 0
-              }}>
-              <TextField
-                id="editAddr"
-                label="Address"
-                variant="outlined"
-                size="small"
-                sx={{
-                  width: {md: '575px', xs:'100%'}
-                }}
-                onChange={handleAddress}
-                defaultValue={inputAddress}
-              />
-              <Box sx={{ 
-                    width: matchMd ? 'unset' : '100%', pb: {md: 0, xs: 4}}}>
-              
-              <Button
-                id="listNFT"
-                variant="contained"
-                startIcon={<AddCard />}
-                
-                onClick={() => {
-                  getCustomNFT();
-                }}
-                style={{
-                  textTransform: "capitalize",
-                  backgroundColor: "#F69025",
-                  fontWeight: "600!important",
-                  fontSize: "16px",
-                  width: '100%'
-                }}
-              >
-                List presented NFT
-              </Button>
-              </Box>
-              </Box>
+        <div className="div-flex">
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<LocalMoviesIcon />}
+            style={{
+              textTransform: "capitalize",
+              margin: "20px",
+              backgroundColor: "#F69025",
+              fontWeight: "600!important",
+              fontSize: "16px",
+              width: "300px",
+            }}
+          >
+            Select file
+            <VisuallyHiddenInput
+              type="file"
+              multiple={true}
+              onChange={(event) => {
+                handleVideoUpload(event);
+              }}
+            />
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            onClick={async () => {
+              await file.forEach((i) => pinFileToPinata(i));
+              openNotificationWithIcon(
+                "success",
+                "Success",
+                "Thumbnails are pinned to cloud successfully"
+              );
+            }}
+            style={{
+              textTransform: "capitalize",
+              margin: "20px",
+              backgroundColor: "#F69025",
+              fontWeight: "600!important",
+              fontSize: "16px",
+              width: "300px",
+            }}
+          >
+            Upload Images To Cloud
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<BrokenImageIcon />}
+            onClick={() => {
+              setIsMintStarted(true);
+              sendHashKeysToBackend();
+              console.log(myipfsHash);
+            }}
+            style={{
+              textTransform: "capitalize",
+              margin: "20px",
+              backgroundColor: "#F69025",
+              fontWeight: "600!important",
+              fontSize: "16px",
+              width: "300px",
+            }}
+          >
+            Mint Images
+          </Button>
+        </div>
 
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell width={"10%"} align="center">No</TableCell>
-                      <TableCell width={"30%"} align="center">Address</TableCell>
-                      <TableCell width={"10%"} align="center">ID</TableCell>
-                      <TableCell align="center">Assets</TableCell>
-                      <TableCell width={"50%"} align="left">Methods</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {realData.map((row) => (
-                      <TableRow
-                        key={row.index}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                          "& td, th": {
-                            padding: 0
-                          }
-                        }}
-                      >
-                        <TableCell align="center" component="th" scope="row">
-                          {row.index}
-                        </TableCell>
-                        <TableCell align="center">{row.tokenAddress.slice(0,6)}...{row.tokenAddress.slice(48)}</TableCell>
-                        <TableCell align="center">{row.tokenID}</TableCell>
-                        <TableCell align="center">{row.tokenURI}</TableCell>
-                        <TableCell align="left">
-                          {" "}
-                          <Button
-                            variant="contained"
-
-                            onClick={() => {
-                              AddCustomNFTTrading();
-                            }}
-                            style={{
-                              textTransform: "capitalize",
-                              margin: "20px",
-                              backgroundColor: "#F69025",
-                              fontWeight: "600!important",
-                              fontSize: "16px",
-                              	
-                            }}
-                          >
-                            Add to Trading Card
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
-          </CustomTabPanel>
-        </Box>
+        <br />
+        {aeScanUrl ? (
+          <a href={aeScanUrl}>Go to AEScan</a>
+        ) : (
+          isMintStarted && <h2>Minting...</h2>
+        )}
       </div>
     </>
   );
@@ -488,36 +252,3 @@ const VisuallyHiddenInput = styled("input")({
   marginTop: "30px",
   textTransform: "none",
 });
-
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-CustomTabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
