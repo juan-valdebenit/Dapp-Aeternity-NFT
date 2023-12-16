@@ -57,5 +57,8 @@
     "fs": false,
     "path": false,
     "os": false
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.6"
   }
 }

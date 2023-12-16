@@ -34,6 +34,51 @@
   background-color: "#F69025";
   font-weight: "600!important";
   font-size: "16px";
-  width: "300px";
+  /* width: "300px"; */
   margin-right: 20px;
 }
+
+@media (max-width: 1024px) {
+
+  #mainTitle{
+    padding: 10px;
+    /* margin-left: 10px; */
+    line-height: 1.6;
+  }
+/* 
+  #selectFile {
+    width: 120%;
+  }
+
+  #uploadCloud{
+    width: 120% !important;
+  } */
+
+  #mintImages{
+    margin-top: 0px !important;
+    /* width: 120% !important; */
+  }
+
+  #outlineDiv{
+    width: 100% !important;
+  }
+
+  /* #listNFT {
+    color: white;
+    width: 100% !important;
+    padding: 8px;
+  } */
+
+  #editAddr {
+    width: 100% !important;
+  }
+
+}
+
+#outlineDiv {
+  text-transform: "capitalize";
+  margin: "20px";
+  font-size: "16px";
+  width: 55%;
+}
+

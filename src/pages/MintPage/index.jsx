@@ -25,7 +25,9 @@ import Box from "@mui/material/Box";
 import logo from "assets/logo.png";
 import "App.css";
 import "./style.css";
+import { useMediaQuery } from "@mui/material";
 import { MDBDataTableV5 } from "mdbreact";
+import { useTheme } from "@mui/material/styles";
 
 export const MintPage = () => {
   const [file, setFile] = useState([]);
@@ -38,6 +40,8 @@ export const MintPage = () => {
   const [inputAddress, setInputAddress] = useState("");
   const [fetchData, setFetchData] = useState([]);
   const [realData, setRealData] = useState([]);
+  const theme = useTheme()
+  const matchMd = useMediaQuery(theme.breakpoints.up('md'))
 
   const openNotificationWithIcon = (type, message, description) => {
     api[type]({
@@ -193,7 +197,7 @@ export const MintPage = () => {
             tokenID: buffer[i].payload.tx.return.value,
             tokenURI: (
               <img
-                style={{ width: "160px", height: "90px" }}
+                style={{ width: 120, height: 60, paddingTop: 8, paddingBottom: 8, verticalAlign: 'middle' }}
                 src={buffer[
                   i
                 ].payload.tx.arguments[1].value[1].value[1].value[0].val.value.replace(
@@ -253,11 +257,11 @@ export const MintPage = () => {
       </div>
       {contextHolder}
       <div className="div-flex-1">
-        <p style={{ color: "#2F3F7C", textAlign: "center" }}>
+        <p style={{ color: "#2F3F7C", textAlign: "center" }} id="mainTitle">
           This is the MVP version, which Mints NFT tokens containing thumbnails
           of sports videos on the Aeternity blockchain.
         </p>
-        <Box sx={{ width: "80%", borderColor: "#F69025" }}>
+        <Box sx={{ maxWidth: 1440, width: '100%', px: 2, borderColor: "#F69025" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs
               value={value}
@@ -277,9 +281,10 @@ export const MintPage = () => {
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            <div className="div-flex">
+            <div className="div-flex" style={{ gap: 20}}>
               <Button
                 component="label"
+                id="selectFile"
                 variant="contained"
                 startIcon={<LocalMoviesIcon />}
                 style={{
@@ -287,6 +292,7 @@ export const MintPage = () => {
                   backgroundColor: "#F69025",
                   fontWeight: "600!important",
                   fontSize: "16px",
+                  width: '100%'
                 }}
               >
                 Select file
@@ -299,6 +305,7 @@ export const MintPage = () => {
                 />
               </Button>
               <Button
+                id="uploadCloud"
                 variant="contained"
                 startIcon={<CloudUploadIcon />}
                 onClick={async () => {
@@ -310,17 +317,19 @@ export const MintPage = () => {
                   );
                 }}
                 style={{
+                  
+                  width: '100%',
                   textTransform: "capitalize",
-                  margin: "20px",
                   backgroundColor: "#F69025",
                   fontWeight: "600!important",
                   fontSize: "16px",
-                  width: "300px",
+                  // width: "300px",
                 }}
               >
                 Upload Images To Cloud
               </Button>
               <Button
+                id="mintImages"
                 variant="contained"
                 startIcon={<BrokenImageIcon />}
                 onClick={() => {
@@ -328,20 +337,22 @@ export const MintPage = () => {
                   sendHashKeysToBackend();
                   console.log(myipfsHash);
                 }}
+                sx={{
+                  width: '100%'
+                }}
                 style={{
                   textTransform: "capitalize",
-                  margin: "20px",
                   backgroundColor: "#F69025",
                   fontWeight: "600!important",
                   fontSize: "16px",
-                  width: "300px",
+                  // width: "300px",
                 }}
               >
                 Mint Images
               </Button>
             </div>
             {aeScanUrl ? (
-              <div style={{ position: "absolute", left: "50%" }}>
+              <div style={{ width: 'fit-content', display: 'flex', gap: '40px', marginTop: '30px', marginRight: 'auto', marginLeft: 'auto'}}>
                 <a href={aeScanUrl} target="_blank">
                   Go to AEScan
                 </a>
@@ -350,59 +361,70 @@ export const MintPage = () => {
               </div>
             ) : (
               isMintStarted && (
-                <h2 style={{ position: "absolute", left: "50%" }}>
+                <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
                   Minting...
                 </h2>
               )
             )}
-            <br /> <br />
             <div id="imageClip"></div>
             <br />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
             <div>
+              <Box sx={{
+                display: 'flex',
+                flexDirection: {
+                  md: 'row',
+                  xs: 'column'
+                },
+                alignItems: { md: 'center', xs: 'flex-start'},
+                gap: 4,
+                pb: matchMd ? 5 : 0
+              }}>
               <TextField
-                id="outlined-basic"
+                id="editAddr"
                 label="Address"
                 variant="outlined"
                 size="small"
-                sx={{ height: "100px" }}
-                style={{
-                  textTransform: "capitalize",
-                  margin: "20px",
-                  fontSize: "16px",
-                  width: "70%",
+                sx={{
+                  width: {md: '575px', xs:'100%'}
                 }}
                 onChange={handleAddress}
                 defaultValue={inputAddress}
               />
+              <Box sx={{ 
+                    width: matchMd ? 'unset' : '100%', pb: {md: 0, xs: 4}}}>
+              
               <Button
+                id="listNFT"
                 variant="contained"
                 startIcon={<AddCard />}
+                
                 onClick={() => {
                   getCustomNFT();
                 }}
                 style={{
                   textTransform: "capitalize",
-                  margin: "20px",
                   backgroundColor: "#F69025",
                   fontWeight: "600!important",
                   fontSize: "16px",
-                  width: "20%",
+                  width: '100%'
                 }}
               >
-                Add to Trading Card
+                List presented NFT
               </Button>
+              </Box>
+              </Box>
 
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                      <TableCell>No</TableCell>
-                      <TableCell align="right">Token Address</TableCell>
-                      <TableCell align="right">Token ID</TableCell>
-                      <TableCell align="right">Assets</TableCell>
-                      <TableCell align="right">Methods</TableCell>
+                      <TableCell width={"10%"} align="center">No</TableCell>
+                      <TableCell width={"30%"} align="center">Address</TableCell>
+                      <TableCell width={"10%"} align="center">ID</TableCell>
+                      <TableCell align="center">Assets</TableCell>
+                      <TableCell width={"50%"} align="left">Methods</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -411,15 +433,18 @@ export const MintPage = () => {
                         key={row.index}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
+                          "& td, th": {
+                            padding: 0
+                          }
                         }}
                       >
-                        <TableCell component="th" scope="row">
+                        <TableCell align="center" component="th" scope="row">
                           {row.index}
                         </TableCell>
-                        <TableCell align="right">{row.tokenAddress}</TableCell>
-                        <TableCell align="right">{row.tokenID}</TableCell>
-                        <TableCell align="right">{row.tokenURI}</TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center">{row.tokenAddress.slice(0,6)}...{row.tokenAddress.slice(48)}</TableCell>
+                        <TableCell align="center">{row.tokenID}</TableCell>
+                        <TableCell align="center">{row.tokenURI}</TableCell>
+                        <TableCell align="left">
                           {" "}
                           <Button
                             variant="contained"
@@ -433,7 +458,7 @@ export const MintPage = () => {
                               backgroundColor: "#F69025",
                               fontWeight: "600!important",
                               fontSize: "16px",
-
+                              	
                             }}
                           >
                             Add to Trading Card
